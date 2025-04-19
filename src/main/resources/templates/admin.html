@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <title>Админ-панель</title>
+</head>
+<body>
+<h1>Добро пожаловать, администратор!</h1>
+<div sec:authorize="isAuthenticated()">
+    <p>Логин: <span th:text="${currentUser.username}"></span></p>
+    <p>Роли: <span th:each="role : ${currentUser.roles}" th:text="${role.name} + ' '"></span></p>
+
+    <h2>Все пользователи:</h2>
+    <table>
+        <tr>
+            <th>ID</th>
+            <th>Логин</th>
+            <th>Роли</th>
+        </tr>
+        <tr th:each="user : ${users}">
+            <td th:text="${user.id}"></td>
+            <td th:text="${user.username}"></td>
+            <td>
+                <span th:each="role : ${user.roles}" th:text="${role.name} + ' '"></span>
+            </td>
+        </tr>
+    </table>
+
+    <form th:action="@{/logout}" method="post">
+        <button type="submit">Выйти</button>
+    </form>
+</div>
+</body>
+</html>
