@@ -1,33 +1,88 @@
 package ru.kata.spring.boot_security.demo.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
-import ru.kata.spring.boot_security.demo.repositories.UserRepository;
+import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
+import ru.kata.spring.boot_security.demo.service.UserService;
 
 import java.security.Principal;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Controller
 @RequestMapping("/admin")
 public class AdminController {
-    private final UserRepository userRepository;
+    private final UserService userService;
+    private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public AdminController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public AdminController(UserService userService, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+        this.userService = userService;
+        this.roleRepository = roleRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping
-    public String adminPage(Principal principal, Model model) {
-        User admin = userRepository.findByUsername(principal.getName());
-        if (admin == null) {
-            throw new RuntimeException("User not found");
+    public String adminPage(Model model, Principal principal) {
+        if (principal == null) {
+            return "redirect:/login";
         }
-        model.addAttribute("currentUser", admin);
-        model.addAttribute("users", userRepository.findAll());
+
+        model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("allRoles", roleRepository.findAll());
+
+        User user = userService.findUserByUsername(principal.getName());
+        if (user != null) {
+            model.addAttribute("currentUser", user);
+        } else {
+            return "redirect:/login";
+        }
+
         return "admin";
+    }
+
+    @PostMapping("/add")
+    public String addUser(@ModelAttribute User user, @RequestParam Set<Long> roles) {
+        Set<Role> roleSet = new HashSet<>(roleRepository.findAllById(roles));
+        user.setRoles(roleSet);
+        userService.saveUser(user);
+        return "redirect:/admin";
+    }
+
+    @PostMapping("/delete/{id}")
+    public String deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return "redirect:/admin";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String editUserForm(@PathVariable Long id, Model model) {
+        User user = userService.findById(id);
+        List<Role> allRoles = roleRepository.findAll();
+
+        model.addAttribute("user", user);
+        model.addAttribute("allRoles", allRoles);
+
+        return "edit";
+    }
+
+    @PostMapping("/edit")
+    public String editUser(@ModelAttribute("user") User user,
+                           @RequestParam(value = "roles", required = false) Set<Long> roles) {
+        Set<Role> roleSet = new HashSet<>(roleRepository.findAllById(roles));
+        user.setRoles(roleSet);
+
+        User existingUser = userService.findById(user.getId());
+        user.setPassword(existingUser.getPassword());
+
+        userService.updateUser(user);
+        return "redirect:/admin";
     }
 }

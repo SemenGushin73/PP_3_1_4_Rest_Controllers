@@ -6,24 +6,29 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import ru.kata.spring.boot_security.demo.models.User;
-import ru.kata.spring.boot_security.demo.service.UserDetailsServiceImpl;
+import ru.kata.spring.boot_security.demo.service.UserService;
 
 import java.security.Principal;
 
 @Controller
 @RequestMapping("/user")
 public class UserController {
-    private final UserDetailsServiceImpl userDetailsService;
+    private final UserService userService;
 
     @Autowired
-    public UserController(UserDetailsServiceImpl userDetailsService) {
-        this.userDetailsService = userDetailsService;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping
-    public String userPage(Principal principal, Model model) {
-        User user = (User) userDetailsService.loadUserByUsername(principal.getName());
+    public String showUserPage(Principal principal, Model model) {
+        User user = userService.findUserByUsername(principal.getName());
         model.addAttribute("currentUser", user);
         return "user";
+    }
+
+    @GetMapping("/login")
+    public String loginPage() {
+        return "login";
     }
 }

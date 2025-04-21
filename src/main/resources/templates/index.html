@@ -1,17 +1,35 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
-    <title>Spring Security Example</title>
-    <div sec:authorize="isAuthenticated()">
-        <form th:action="@{/logout}" method="post">
-            <button type="submit">Выйти</button>
-        </form>
-    </div>
+    <meta charset="UTF-8">
+    <title>Главная страница</title>
+    <style>
+        .auth-links {
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-<h1>Welcome to Index PAGE!</h1>
+<h1>Добро пожаловать!</h1>
 
+<div sec:authorize="isAuthenticated()" class="auth-links">
+    <a th:href="@{/user}">Мой профиль</a>
+    <span sec:authorize="hasAuthority('ROLE_ADMIN')">
+        | <a th:href="@{/admin}">Панель администратора</a>
+    </span>
+    <form th:action="@{/logout}" method="post" style="display: inline;">
+        <button type="submit">Выйти</button>
+    </form>
+</div>
 
+<div sec:authorize="!isAuthenticated()" class="auth-links">
+    <a th:href="@{/login}">Войти</a>
+</div>
 </body>
 </html>

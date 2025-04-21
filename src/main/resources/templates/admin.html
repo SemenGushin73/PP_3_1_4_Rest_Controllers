@@ -1,7 +1,29 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
+    <meta charset="UTF-8">
     <title>Админ-панель</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        button {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
 <h1>Добро пожаловать, администратор!</h1>
@@ -13,21 +35,109 @@
     <table>
         <tr>
             <th>ID</th>
-            <th>Логин</th>
+            <th>Имя</th>
+            <th>Фамилия</th>
+            <th>Email</th>
             <th>Роли</th>
+            <th>Действия</th>
         </tr>
         <tr th:each="user : ${users}">
             <td th:text="${user.id}"></td>
             <td th:text="${user.username}"></td>
+            <td th:text="${user.lastname}"></td>
+            <td th:text="${user.email}"></td>
             <td>
                 <span th:each="role : ${user.roles}" th:text="${role.name} + ' '"></span>
+            </td>
+            <td>
+                <button type="button"
+                        class="edit-btn"
+                        th:attr="data-id=${user.id},
+                    data-username=${user.username},
+                    data-lastname=${user.lastname},
+                    data-email=${user.email},
+                    data-age=${user.age},
+                    data-roles=${#strings.listJoin(user.roles.?[name != null].![name], ',')}">
+                    Редактировать
+                </button>
+                <form th:action="@{/admin/delete/{id}(id=${user.id})}" method="post" style="display: inline;">
+                    <button type="submit">Удалить</button>
+                </form>
             </td>
         </tr>
     </table>
 
-    <form th:action="@{/logout}" method="post">
+    <h2>Добавить пользователя:</h2>
+    <form th:action="@{/admin/add}" method="post">
+        <label>Имя: <input type="text" name="username" required></label><br>
+        <label>Фамилия: <input type="text" name="lastname" required></label><br>
+        <label>Email: <input type="email" name="email" required></label><br>
+        <label>Возраст: <input type="number" name="age"></label><br>
+        <label>Пароль: <input type="password" name="password" required></label><br>
+        <label>Роли:
+            <select name="roles" multiple>
+                <option th:each="role : ${allRoles}" th:value="${role.id}" th:text="${role.name}"></option>
+            </select>
+        </label><br>
+        <button type="submit">Добавить</button>
+    </form>
+
+    <form th:action="@{/logout}" method="post" style="margin-top: 20px;">
         <button type="submit">Выйти</button>
     </form>
+
+    <h2>Редактировать пользователя:</h2>
+    <form id="editForm" th:action="@{/admin/edit}" method="post">
+        <input type="hidden" name="id" id="edit-id">
+        <label>Имя: <input type="text" name="username" id="edit-username" required></label><br>
+        <label>Фамилия: <input type="text" name="lastname" id="edit-lastname" required></label><br>
+        <label>Email: <input type="email" name="email" id="edit-email" required></label><br>
+        <label>Возраст: <input type="number" name="age" id="edit-age"></label><br>
+
+        <label>Роли:
+            <select name="roles" id="edit-roles" multiple>
+                <option th:each="role : ${allRoles}"
+                        th:value="${role.id}"
+                        th:text="${role.name}">
+                </option>
+            </select>
+        </label><br>
+
+        <button type="submit">Сохранить</button>
+    </form>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.edit-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    const roles = this.dataset.roles.split(',').filter(r => r.trim() !== '');
+                    fillEditForm(
+                        this.dataset.id,
+                        this.dataset.username,
+                        this.dataset.lastname,
+                        this.dataset.email,
+                        this.dataset.age,
+                        roles
+                    );
+                });
+            });
+        });
+
+        function fillEditForm(userId, username, lastname, email, age, roles) {
+            document.getElementById('edit-id').value = userId;
+            document.getElementById('edit-username').value = username;
+            document.getElementById('edit-lastname').value = lastname;
+            document.getElementById('edit-email').value = email;
+            document.getElementById('edit-age').value = age || '';
+
+            const select = document.getElementById('edit-roles');
+            Array.from(select.options).forEach(option => {
+                option.selected = roles.includes(option.text);
+            });
+
+            window.scrollTo(0, document.getElementById('editForm').offsetTop);
+        }
+    </script>
 </div>
 </body>
 </html>

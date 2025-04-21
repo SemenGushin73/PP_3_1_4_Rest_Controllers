@@ -1,13 +1,29 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
+    <meta charset="UTF-8">
     <title>Страница пользователя</title>
+    <style>
+        .user-info {
+            margin: 20px 0;
+        }
+
+        button {
+            padding: 5px 10px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 <body>
-<h1>Добро пожаловать, пользователь!</h1>
-<div sec:authorize="isAuthenticated()">
-    <p>Логин: <span th:text="${currentUser.username}"></span></p>
-    <p>Роли: <span th:each="role : ${currentUser.roles}" th:text="${role.name} + ' '"></span></p>
+<h1>Добро пожаловать, <span th:text="${currentUser.username}"></span>!</h1>
+<div sec:authorize="isAuthenticated()" class="user-info">
+    <p><strong>Логин:</strong> <span th:text="${currentUser.username}"></span></p>
+    <p><strong>Фамилия:</strong> <span th:text="${currentUser.lastname}"></span></p>
+    <p><strong>Email:</strong> <span th:text="${currentUser.email}"></span></p>
+    <p><strong>Возраст:</strong> <span th:text="${currentUser.age}"></span></p>
+    <p><strong>Роли:</strong>
+        <span th:each="role : ${currentUser.roles}" th:text="${role.name} + ' '"></span>
+    </p>
 
     <form th:action="@{/logout}" method="post">
         <button type="submit">Выйти</button>
