@@ -35,7 +35,7 @@ public class AdminController {
             return "redirect:/login";
         }
 
-        model.addAttribute("users", userService.getAllUsers());
+        model.addAttribute("users", userService.getAll());
         model.addAttribute("allRoles", roleRepository.findAll());
 
         User user = userService.findUserByUsername(principal.getName());
@@ -64,7 +64,7 @@ public class AdminController {
 
     @GetMapping("/edit/{id}")
     public String editUserForm(@PathVariable Long id, Model model) {
-        User user = userService.findById(id);
+        User user = userService.getById(id);
         List<Role> allRoles = roleRepository.findAll();
 
         model.addAttribute("user", user);
@@ -79,7 +79,7 @@ public class AdminController {
         Set<Role> roleSet = new HashSet<>(roleRepository.findAllById(roles));
         user.setRoles(roleSet);
 
-        User existingUser = userService.findById(user.getId());
+        User existingUser = userService.getById(user.getId());
         user.setPassword(existingUser.getPassword());
 
         userService.updateUser(user);

@@ -48,18 +48,20 @@ public class UserServiceImp implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public List<User> getAllUsers() {
-        return userDao.getAllUsers();
+    public List<User> getAll() {
+        return userDao.getAll();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public User findUserByUsername(String username) {
         return userDao.findByUsername(username);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public User findById(Long id) {
-        return userDao.getUserById(id);
+    public User getById(Long id) {
+        return userDao.getById(id);
     }
 
 }
