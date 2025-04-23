@@ -30,7 +30,7 @@ public class AdminController {
     }
 
     @GetMapping
-    public String adminPage(Model model, Principal principal) {
+    public String showAdminPage(Model model, Principal principal) {
         if (principal == null) {
             return "redirect:/login";
         }
@@ -63,7 +63,7 @@ public class AdminController {
     }
 
     @GetMapping("/edit/{id}")
-    public String editUserForm(@PathVariable Long id, Model model) {
+    public String showEditUserForm(@PathVariable Long id, Model model) {
         User user = userService.getById(id);
         List<Role> allRoles = roleRepository.findAll();
 
