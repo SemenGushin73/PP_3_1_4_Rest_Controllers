@@ -14,22 +14,32 @@
             cursor: pointer;
         }
     </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
+            crossorigin="anonymous"></script>
 </head>
 <body>
-<h1>Добро пожаловать!</h1>
+<div class="container d-flex flex-column justify-content-center align-items-center">
 
-<div sec:authorize="isAuthenticated()" class="auth-links">
-    <a th:href="@{/user}">Мой профиль</a>
-    <span sec:authorize="hasAuthority('ROLE_ADMIN')">
-        | <a th:href="@{/admin}">Панель администратора</a>
+    <div sec:authorize="isAuthenticated()"
+         class="auth-links col-6 d-flex flex-column justify-content-center align-items-center">
+        <span class="fs-1 mb-4">Добро пожаловать!</span>
+        <a class="btn btn-primary mb-4" th:href="@{/user}">Мой профиль</a>
+        <span sec:authorize="hasAuthority('ROLE_ADMIN')">
+        <a class="btn btn-primary mb-4" th:href="@{/admin}">Панель администратора</a>
     </span>
-    <form th:action="@{/logout}" method="post" style="display: inline;">
-        <button type="submit">Выйти</button>
-    </form>
-</div>
+        <form th:action="@{/logout}" method="post" style="display: inline;">
+            <button class="btn btn-danger" type="submit">Выйти</button>
+        </form>
+    </div>
 
-<div sec:authorize="!isAuthenticated()" class="auth-links">
-    <a th:href="@{/login}">Войти</a>
+    <div sec:authorize="!isAuthenticated()"
+         class="auth-links col-6 d-flex flex-column justify-content-center align-items-center">
+        <span class="fs-1 mb-4">Добро пожаловать!</span>
+        <a class="btn btn-primary" th:href="@{/login}">Войти</a>
+    </div>
 </div>
 </body>
 </html>

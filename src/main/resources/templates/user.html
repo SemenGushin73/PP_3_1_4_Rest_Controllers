@@ -13,21 +13,69 @@
             cursor: pointer;
         }
     </style>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-SgOJa3DmI69IUzQ2PVdRZhwQ+dy64/BUtbMJw1MZ8t5HZApcHrRKUc4W0kG879m7" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-k6d4wzSIapyDyv1kpU366/PK5hCdSbCRGRCMv+eplOQJWyd1fbcAu9OCUj5zNLiq"
+            crossorigin="anonymous"></script>
 </head>
 <body>
-<h1>Добро пожаловать, <span th:text="${currentUser.username}"></span>!</h1>
-<div sec:authorize="isAuthenticated()" class="user-info">
-    <p><strong>Логин:</strong> <span th:text="${currentUser.username}"></span></p>
-    <p><strong>Фамилия:</strong> <span th:text="${currentUser.lastname}"></span></p>
-    <p><strong>Email:</strong> <span th:text="${currentUser.email}"></span></p>
-    <p><strong>Возраст:</strong> <span th:text="${currentUser.age}"></span></p>
-    <p><strong>Роли:</strong>
-        <span th:each="role : ${currentUser.roles}" th:text="${role.name} + ' '"></span>
-    </p>
-
-    <form th:action="@{/logout}" method="post">
-        <button type="submit">Выйти</button>
+<div id="header" class="col-12 bg-info p-3 d-flex flex-row justify-content-between align-items-center">
+    <div class="d-flex flex-row justify-content-center align-items-center gap-1">
+        <span class="fs-2" th:text="${currentUser.email}"></span>
+        <span class="fs-2">with roles:</span>
+        <span class="fs-2" th:text="${currentUser.getStringifiedRoles()}"></span>
+    </div>
+    <form th:action="@{/logout}" method="post" style="display: inline;">
+        <button class="btn btn-primary">Logout</button>
     </form>
+</div>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2 bg-light vh-100 p-3">
+            <ul class="nav flex-column nav-pills">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/user">User</a>
+                </li>
+                <li class="nav-item" sec:authorize="hasAuthority('ROLE_ADMIN')">
+                    <a class="nav-link" href="/admin">Admin</a>
+                </li>
+            </ul>
+        </div>
+        <div id="table" class="col-10 vh-100 h-100 d-flex flex-column p-4">
+            <span class="fs-2 mb-3">User information page</span>
+            <div>
+                <div class="card text-bg-light mb-3">
+                    <div class="card-header">About user</div>
+                    <div class="card-body">
+                        <table class="table table-light">
+                            <thead>
+                            <tr>
+                                <th scope="col">ID</th>
+                                <th scope="col">First Name</th>
+                                <th scope="col">Last Name</th>
+                                <th scope="col">Age</th>
+                                <th scope="col">Email</th>
+                                <th scope="col">Role</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr>
+                                <td th:text="${currentUser.id}"></td>
+                                <td th:text="${currentUser.username}"></td>
+                                <td th:text="${currentUser.lastname}"></td>
+                                <td th:text="${currentUser.age}"></td>
+                                <td th:text="${currentUser.email}"></td>
+                                <td th:text="${currentUser.getStringifiedRoles()}"></td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
 </div>
 </body>
 </html>

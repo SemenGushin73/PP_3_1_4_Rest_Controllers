@@ -11,9 +11,7 @@ import ru.kata.spring.boot_security.demo.repositories.RoleRepository;
 import ru.kata.spring.boot_security.demo.service.UserService;
 
 import java.security.Principal;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Controller
 @RequestMapping("/admin")
@@ -58,6 +56,7 @@ public class AdminController {
 
     @PostMapping("/delete/{id}")
     public String deleteUser(@PathVariable Long id) {
+        System.out.println("1111deleting user1111 " + id);
         userService.deleteUser(id);
         return "redirect:/admin";
     }
@@ -76,13 +75,15 @@ public class AdminController {
     @PostMapping("/edit")
     public String editUser(@ModelAttribute("user") User user,
                            @RequestParam(value = "roles", required = false) Set<Long> roles) {
-        Set<Role> roleSet = new HashSet<>(roleRepository.findAllById(roles));
-        user.setRoles(roleSet);
+        if (user.getPassword() == null || user.getPassword().isEmpty() || Objects.equals(user.getPassword(), "")) {
 
-        User existingUser = userService.getById(user.getId());
-        user.setPassword(existingUser.getPassword());
+            User existingUser = userService.getById(user.getId());
+            user.setPassword(existingUser.getPassword());
+            userService.updateUser(user, false);
 
-        userService.updateUser(user);
+        } else {
+            userService.updateUser(user, true);
+        }
         return "redirect:/admin";
     }
 }
