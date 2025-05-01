@@ -45,9 +45,9 @@ public class InDatabaseInitializer implements CommandLineRunner {
                     return roleRepository.save(role);
                 });
 
-        if (userRepository.findByUsername("admin") == null) {
+        if (userRepository.findByEmail("admin@mail.com") == null) {
             User admin = new User();
-            admin.setUsername("admin");
+            admin.setFirstname("admin");
             admin.setLastname("admin");
             admin.setAge(20);
             admin.setEmail("admin@mail.com");
@@ -56,9 +56,9 @@ public class InDatabaseInitializer implements CommandLineRunner {
             userRepository.save(admin);
         }
 
-        if (userRepository.findByUsername("user") == null) {
+        if (userRepository.findByEmail("user@mail.com") == null) {
             User user = new User();
-            user.setUsername("user");
+            user.setFirstname("user");
             user.setLastname("user");
             user.setAge(30);
             user.setEmail("user@mail.com");

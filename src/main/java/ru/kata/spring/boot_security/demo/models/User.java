@@ -14,16 +14,16 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
-    private String username;
+    @Column(nullable = false)
+    private String firstname;
 
-    @Column
+    @Column(nullable = false)
     private String lastname;
 
-    @Column
+    @Column(nullable = false)
     private Integer age;
 
-    @Column
+    @Column(unique = true, nullable = false)
     private String email;
 
     private String password;
@@ -45,7 +45,11 @@ public class User implements UserDetails {
 
     @Override
     public String getUsername() {
-        return username;
+        return email;
+    }
+
+    public String getFirstname() {
+        return firstname;
     }
 
     @Override
@@ -76,8 +80,8 @@ public class User implements UserDetails {
         this.id = id;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setFirstname(String username) {
+        this.firstname = username;
     }
 
     public String getLastname() {
@@ -93,6 +97,9 @@ public class User implements UserDetails {
     }
 
     public void setAge(Integer age) {
+        if (age == null || age <= 0) {
+            throw new IllegalArgumentException("Age must be positive");
+        }
         this.age = age;
     }
 
@@ -129,7 +136,7 @@ public class User implements UserDetails {
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(username, user.username)
+        return Objects.equals(id, user.id) && Objects.equals(firstname, user.firstname)
                 && Objects.equals(lastname, user.lastname)
                 && Objects.equals(age, user.age)
                 && Objects.equals(email, user.email);
@@ -137,14 +144,14 @@ public class User implements UserDetails {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, username, lastname, age, email);
+        return Objects.hash(id, firstname, lastname, age, email);
     }
 
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
-                ", username='" + username + '\'' +
+                ", username='" + firstname + '\'' +
                 ", lastname='" + lastname + '\'' +
                 ", age='" + age + '\'' +
                 ", email='" + email + '\'' +

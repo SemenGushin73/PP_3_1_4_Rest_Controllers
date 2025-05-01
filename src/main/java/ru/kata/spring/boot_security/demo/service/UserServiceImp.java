@@ -4,8 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import ru.kata.spring.boot_security.demo.dao.UserDao;
 import ru.kata.spring.boot_security.demo.models.User;
+import ru.kata.spring.boot_security.demo.repositories.UserRepository;
 
 import java.util.List;
 
@@ -13,55 +13,86 @@ import java.util.List;
 @Service
 public class UserServiceImp implements UserService {
 
-    private final UserDao userDao;
-
+    private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImp(UserDao userDao, PasswordEncoder passwordEncoder) {
-        this.userDao = userDao;
+    public UserServiceImp(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
 
     @Transactional
     @Override
-    public void updateUser(User user, Boolean shouldEncodePassword) {
-        if (user.getPassword() != null && !user.getPassword().isEmpty() && shouldEncodePassword == true) {
-            user.setPassword(passwordEncoder.encode(user.getPassword()));
+    public void updateUser(User updatedUser) {
+        User existingUser = userRepository.findById(updatedUser.getId())
+                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+
+        // Проверяем, изменился ли email
+        String newEmail = updatedUser.getEmail();
+        if (!existingUser.getEmail().equals(newEmail)) {
+            // Если email изменился, проверяем его уникальность
+            if (userRepository.findByEmail(newEmail).isPresent()) {
+                throw new IllegalArgumentException("User with this email already exists");
+            }
+            existingUser.setEmail(newEmail);
         }
-        userDao.updateUser(user);
+
+        // Обновляем остальные поля
+        existingUser.setFirstname(updatedUser.getFirstname());
+        existingUser.setLastname(updatedUser.getLastname());
+        existingUser.setAge(updatedUser.getAge());
+
+        // Обновляем пароль только если он был изменен
+        if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
+            existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
+        }
+
+        // Обновляем роли
+        existingUser.setRoles(updatedUser.getRoles());
+
+        userRepository.save(existingUser);
     }
 
     @Transactional
     @Override
     public void saveUser(User user) {
+        if (userRepository.findByEmail(user.getEmail()).isPresent()) {
+            throw new IllegalArgumentException("User with this username already exists");
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        userDao.saveUser(user);
+        userRepository.save(user);
     }
 
     @Transactional
     @Override
     public void deleteUser(Long id) {
-        userDao.deleteUser(id);
+        userRepository.deleteById(id);
     }
 
     @Transactional(readOnly = true)
     @Override
     public List<User> getAll() {
-        return userDao.getAll();
+        return userRepository.findAll();
     }
 
     @Transactional(readOnly = true)
     @Override
     public User findUserByUsername(String username) {
-        return userDao.findByUsername(username);
+        return userRepository.findByEmail(username).get();
     }
 
     @Transactional(readOnly = true)
     @Override
     public User getById(Long id) {
-        return userDao.getById(id);
+        return userRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("User not found"));
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public User getUserByEmail(String email){
+        return userRepository.findByEmail(email).get();
     }
 
 }
