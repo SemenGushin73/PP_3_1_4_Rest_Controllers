@@ -79,26 +79,4 @@ public class AdminRestController {
         return ResponseEntity.ok(response);
     }
 
-//    @PutMapping
-//    public ResponseEntity<User> editUser(@RequestBody Map<String, Object> payload) {
-//        User user = userService.getById(Long.parseLong(payload.get("id").toString()));
-//        user.setUsername((String) payload.get("username"));
-//        user.setLastname((String) payload.get("lastname"));
-//        user.setEmail((String) payload.get("email"));
-//        user.setAge(Integer.parseInt(payload.get("age").toString()));
-//
-//
-//        if (payload.get("password") != null && !((String) payload.get("password")).isEmpty()) {
-//            user.setPassword(passwordEncoder.encode((String) payload.get("password")));
-//        }
-//
-//        Set<Role> roles = new HashSet<>();
-//        ((List<Integer>) payload.get("roles")).forEach(roleId ->
-//                roles.add(roleRepository.findById(roleId.longValue()).orElseThrow())
-//        );
-//        user.setRoles(roles);
-//
-//        userService.saveUser(user);
-//        return ResponseEntity.ok(user);
-//    }
 }

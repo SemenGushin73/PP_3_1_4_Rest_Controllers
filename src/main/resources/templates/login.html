@@ -13,10 +13,12 @@
         <div class="col-6 d-flex flex-column justify-content-center align-items-center bg-info p-3 rounded-4">
             <span class="fs-1 mb-4 text-light">Login</span>
             <div class="input-group mb-3 w-50">
-                <input type="text" class="form-control" placeholder="Email" name="username" required value="admin@mail.com">
+                <input type="text" class="form-control" placeholder="Email" name="username" required
+                       value="admin@mail.com">
             </div>
             <div class="input-group mb-3 w-50">
-                <input type="password" class="form-control" placeholder="Password" name="password" required value="admin">
+                <input type="password" class="form-control" placeholder="Password" name="password" required
+                       value="admin">
             </div>
             <button type="submit" class="btn btn-primary">Sign In</button>
         </div>
@@ -25,7 +27,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.5/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    // Check URL for error or logout parameters
     const urlParams = new URLSearchParams(window.location.search);
 
     if (urlParams.has('error')) {
@@ -38,8 +39,7 @@
         document.getElementById('logoutMessage').style.display = 'block';
     }
 
-    // Handle form submission
-    document.getElementById('loginForm').addEventListener('submit', function(e) {
+    document.getElementById('loginForm').addEventListener('submit', function (e) {
         e.preventDefault();
 
         const formData = new FormData(this);

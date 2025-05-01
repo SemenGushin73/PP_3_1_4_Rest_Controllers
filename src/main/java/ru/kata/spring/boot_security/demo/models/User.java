@@ -119,15 +119,6 @@ public class User implements UserDetails {
         return roles;
     }
 
-    public String getStringifiedRoles() {
-        String rolesNames[] = new String[roles.size()];
-        int i = 0;
-        for (Role role : roles) {
-            rolesNames[i++] = role.getName();
-        }
-        return String.join(",", rolesNames).replaceAll("ROLE_", "");
-    }
-
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }

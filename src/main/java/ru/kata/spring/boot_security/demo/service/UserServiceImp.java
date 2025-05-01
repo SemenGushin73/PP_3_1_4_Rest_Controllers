@@ -91,7 +91,7 @@ public class UserServiceImp implements UserService {
 
     @Transactional(readOnly = true)
     @Override
-    public User getUserByEmail(String email){
+    public User getUserByEmail(String email) {
         return userRepository.findByEmail(email).get();
     }
 
