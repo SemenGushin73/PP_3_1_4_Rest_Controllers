@@ -29,27 +29,22 @@ public class UserServiceImp implements UserService {
         User existingUser = userRepository.findById(updatedUser.getId())
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
-        // Проверяем, изменился ли email
         String newEmail = updatedUser.getEmail();
         if (!existingUser.getEmail().equals(newEmail)) {
-            // Если email изменился, проверяем его уникальность
             if (userRepository.findByEmail(newEmail).isPresent()) {
                 throw new IllegalArgumentException("User with this email already exists");
             }
             existingUser.setEmail(newEmail);
         }
 
-        // Обновляем остальные поля
         existingUser.setFirstname(updatedUser.getFirstname());
         existingUser.setLastname(updatedUser.getLastname());
         existingUser.setAge(updatedUser.getAge());
 
-        // Обновляем пароль только если он был изменен
         if (updatedUser.getPassword() != null && !updatedUser.getPassword().isEmpty()) {
             existingUser.setPassword(passwordEncoder.encode(updatedUser.getPassword()));
         }
 
-        // Обновляем роли
         existingUser.setRoles(updatedUser.getRoles());
 
         userRepository.save(existingUser);
@@ -68,6 +63,7 @@ public class UserServiceImp implements UserService {
     @Transactional
     @Override
     public void deleteUser(Long id) {
+        System.out.println("Deleting user with id: " + id);
         userRepository.deleteById(id);
     }
 
